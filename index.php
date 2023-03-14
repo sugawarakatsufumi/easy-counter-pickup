@@ -10,7 +10,7 @@ class easy_counter_pickup_plugin {
     add_filter( 'the_content', array($this,'debug'), 10, 1);
     add_filter( 'template_redirect', array($this,'accessCounter'), 10, 1);
     add_action('rest_api_init', array($this, 'api_add_fields'));
-    add_action('rest_api_init', array($this, 'api_add_tax_fields'));
+   // add_action('rest_api_init', array($this, 'api_add_tax_fields'));
   }
   public function debug($str){
     global $post;
@@ -20,29 +20,17 @@ class easy_counter_pickup_plugin {
       return "アクセス数".$key_1_value." 初回アクセス".$key_2_value.$str;
     }
   }
-  function api_add_tax_fields(){
-    register_rest_field('categories',
+  public function api_add_fields(){
+    register_rest_field(array('post','pages','category','tag'),
       'ka2AccessCounter',
-       array(
+      array(
         'get_callback' => function($post, $name){
-          $counter = get_term_meta($post['id'], 'ka2AccessCounter', true);
-          if($counter){
-            return $counter;
-          }else{
-            return "0";
+          $counter = '';
+          if(preg_match('/posts|pages/', $_SERVER['REQUEST_URI'])){
+            $counter = get_post_meta($post['id'], $name, true);
+          }elseif(preg_match('/categories|tags/', $_SERVER['REQUEST_URI'])){
+            $counter = get_term_meta($post['id'], $name, true);
           }
-        },
-        'update_callback' => null,
-        'schema' => null,
-      )
-    );
-  }
-  function api_add_fields(){
-    register_rest_field('post',
-      'ka2AccessCounter',
-       array(
-        'get_callback' => function($post, $name){
-          $counter = get_post_meta($post['id'], 'ka2AccessCounter', true);
           if($counter){
             return $counter;
           }else{
