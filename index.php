@@ -12,7 +12,7 @@ class ka2EasyCounter {
   public $removesecond = 2592000;
 
   public function __construct(){
-    add_filter( 'the_content', array($this,'debug'), 10, 1);
+    //add_filter( 'the_content', array($this,'debug'), 10, 1);
     add_filter( 'template_redirect', array($this,'access_counter'), 10, 1);
     add_action('rest_api_init', array($this, 'api_add_fields'));
   }
