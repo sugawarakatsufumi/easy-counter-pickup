@@ -5,15 +5,15 @@ Description: 簡単なアクセスカウンター(tax&singularに対応)と記�
 Author: 菅原勝文
 Version: 1.0
 */
-class ka2EasyCounterPickupPlugin {
-  
+class ka2EasyCounter {
+
   public $accessCounterName = 'ka2AccessCounter';
   public $accessCounterDate = 'ka2FirstAccessDate';
   public $removesecond = 2592000;
 
   public function __construct(){
     add_filter( 'the_content', array($this,'debug'), 10, 1);
-    add_filter( 'template_redirect', array($this,'accessCounter'), 10, 1);
+    add_filter( 'template_redirect', array($this,'access_counter'), 10, 1);
     add_action('rest_api_init', array($this, 'api_add_fields'));
   }
   public function debug($str){
@@ -46,7 +46,7 @@ class ka2EasyCounterPickupPlugin {
       )
     );
   }
-  public function accessCounter(){
+  public function access_counter(){
     global $post;
     $removesecond = $this->removesecond;
     if(is_singular()){
@@ -87,4 +87,6 @@ class ka2EasyCounterPickupPlugin {
     }
   }
 }
-$ka2EasyCounterPickupPlugin = new ka2EasyCounterPickupPlugin();
+include 'pickup.php';
+$ka2Pickup = new ka2Pickup();
+$ka2EasyCounter = new ka2EasyCounter();
