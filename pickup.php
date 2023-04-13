@@ -12,6 +12,7 @@ class ka2Pickup {
     add_action('admin_menu', array($this, 'add_ka2Pickup_meta_box'));
     add_action('save_post', array($this, 'save_pickup_fields'));
     add_action('rest_api_init', array($this, 'api_add_fields'));
+    add_action('rest_post_query', array($this,'sortby_meta_key'), 10, 2);
   }
 
   public function add_ka2Pickup_meta_box() {
@@ -33,7 +34,6 @@ class ka2Pickup {
       echo '<label><input type="checkbox" name="'.$this->ka2PickupName.'[]" value="' . esc_attr($d) . '" ' . $check . '>' . esc_html($d) . '</label><br>';
     }
   }
-
   public function save_pickup_fields($post_id) {
     echo '保存成功';
     if ( isset($_POST[$this->nonceCsrfField]) && $_POST[$this->nonceCsrfField] ) {
@@ -69,6 +69,18 @@ class ka2Pickup {
         'schema' => null,
       )
     );
+  }
+  //APIソート機能実装
+  public function sortby_meta_key($args, $request) {
+    if ( isset($request['meta_key']) ) {
+      $args['meta_key'] = $request['meta_key'];
+      $args['orderby'] = 'meta_value_num';
+      
+      if ( isset($request['meta_orderby']) ) {
+        $args['orderby'] = $request['meta_orderby'];
+      }
+    }
+    return $args;
   }
 
 }

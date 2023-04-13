@@ -15,6 +15,7 @@ class ka2EasyCounter {
     //add_filter( 'the_content', array($this,'debug'), 10, 1);
     add_filter( 'template_redirect', array($this,'access_counter'), 10, 1);
     add_action('rest_api_init', array($this, 'api_add_fields'));
+    add_action('rest_post_query', array($this,'sortby_meta_key'), 10, 2);
   }
   public function debug($str){
     global $post;
@@ -23,6 +24,18 @@ class ka2EasyCounter {
       $key_2_value = get_post_meta( $post->ID, $this->accessCounterDate, true );
       return "アクセス数".$key_1_value." 初回アクセス".$key_2_value.$str;
     }
+  }
+  //APIソート機能実装
+  public function sortby_meta_key($args, $request) {
+    if ( isset($request['meta_key']) ) {
+      $args['meta_key'] = $request['meta_key'];
+      $args['orderby'] = 'meta_value_num';
+      
+      if ( isset($request['meta_orderby']) ) {
+        $args['orderby'] = $request['meta_orderby'];
+      }
+    }
+    return $args;
   }
   public function api_add_fields(){
     register_rest_field(array('post','pages','category','tag'),
